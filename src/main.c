@@ -2,11 +2,26 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-
 #include <dirent.h>
 
 #define TRUE 1
 #define FALSE 0
+
+typedef struct {
+  char devices_file[50];
+  char config_file[50];
+  char device[50];
+  char value[5];
+} config_t;
+
+void remove_endline(char* s) {
+  while (*s) {
+    if (*s == '\n') {
+      *s = '\0';
+    }
+    s++;
+  }
+}
 
 void help_page(char* app_name) {
 	fprintf(stderr, "cblight help page\n");
@@ -18,10 +33,10 @@ void help_page(char* app_name) {
 	fprintf(stderr, "%s%5s%32s\n", app_name, "-f", "Set the value to all devices");
 }
 
-void generate_devices(FILE* fDevices, char* devices_file) {
+void generate_devices(FILE* fDevices, config_t* config) {
 	struct dirent *pDirent;
-	DIR *pDIR;
-	char *bldir = "/sys/class/backlight/";
+	DIR* pDIR;
+	char* bldir = "/sys/class/backlight/";
 
 	pDIR = opendir(bldir);
 	if (pDIR == NULL) {
@@ -29,7 +44,7 @@ void generate_devices(FILE* fDevices, char* devices_file) {
 		exit(EXIT_FAILURE);
 	}
 
-	fclose(fopen(devices_file, "w"));
+	fclose(fopen(config->devices_file, "w"));
 	rewind(fDevices);
 	while ((pDirent = readdir(pDIR)) != NULL) {
 		if (!(strcmp(pDirent->d_name, ".") == 0 || strcmp(pDirent->d_name, "..") == 0)) {
@@ -43,7 +58,7 @@ void print_devices(FILE* fDevices) {
 	fseek(fDevices, 0, SEEK_SET);
 	fprintf(stdout, "Devices list:\n");
 	while (fgets(device, 50, fDevices)) {
-		device[strcspn(device, "\n")] = '\0';
+    remove_endline(device);
 		fprintf(stdout, "%s\n", device);
 	}
 }
@@ -52,15 +67,16 @@ int actual_value() {
 	return 0;
 }
 
-void get_device(FILE* fConfig, char* result) {
-	fgets(result, 50, fConfig);
+void get_device(config_t* config) {
+  FILE* fConfig = fopen(config->devices_file, "r");
+	fgets(config->device, 50, fConfig);
 }
 
 int find_device(FILE* fDevices, char* device) {
 	char sel_device[50];
 	fseek(fDevices, 0, SEEK_SET);
 	while (fgets(sel_device, 50, fDevices)) {
-		sel_device[strcspn(sel_device, "\n")] = '\0';
+    remove_endline(sel_device);
 		if (strcmp(device, sel_device) == 0) {
 			return TRUE;
 		}
@@ -120,30 +136,30 @@ int main(int argc, char** argv) {
 		exit(EXIT_FAILURE);
 	}
 
-	char* device = malloc(sizeof(char*) * 50);
-	char* devices_file = "devices.cb";
-	char* config_file = "config.cb";
+  config_t config;
+  strcpy(config.devices_file, "devices.cb");
+  strcpy(config.config_file, "config.cb");
 	char mode[3];
 
 	FILE* fDevices;
 	FILE* fConfig;
 
-	if (access(devices_file, F_OK) == 0) {
+	if (access(config.devices_file, F_OK) == 0) {
 		strncpy(mode, "r+", 3);
 	} else {
 		strncpy(mode, "w+", 3);
 	}
-	fDevices = fopen(devices_file, mode);
+	fDevices = fopen(config.devices_file, mode);
 
-	if (access(config_file, F_OK) == 0) {
+	if (access(config.config_file, F_OK) == 0) {
 		strncpy(mode, "r+", 3);
 	} else {
 		strncpy(mode, "w+", 3);
 	}
-	fConfig = fopen(config_file, mode);
+	fConfig = fopen(config.config_file, mode);
 
 	if (fDevices == NULL || fConfig == NULL) {
-		fprintf(stderr, "Unable to open %s or %s\n", config_file, devices_file);
+		fprintf(stderr, "Unable to open %s or %s\n", config.config_file, config.devices_file);
 		exit(EXIT_FAILURE);
 	}
 
@@ -154,11 +170,11 @@ int main(int argc, char** argv) {
 				help_page(argv[0]);
 				exit(EXIT_SUCCESS);
 			case 'l':
-				generate_devices(fDevices, devices_file);
+				generate_devices(fDevices, &config);
 				print_devices(fDevices);
 				exit(EXIT_SUCCESS);
 			case 'd':
-				generate_devices(fDevices, devices_file);
+				generate_devices(fDevices, &config);
 				if (find_device(fDevices, optarg)) {
 					set_device(fConfig, fDevices, optarg);
 					exit(EXIT_SUCCESS);
@@ -167,16 +183,16 @@ int main(int argc, char** argv) {
 					exit(EXIT_FAILURE);
 				}
 			case 's':
-				generate_devices(fDevices, devices_file);
-				get_device(fConfig, device);
-				device[strcspn(device, "\n")] = '\0';
-				if (strcmp(device, "") == 0) {
+				generate_devices(fDevices, &config);
+				get_device(&config);
+        remove_endline(config.device);
+				if (strcmp(config.device, "") == 0) {
 					fprintf(stderr, "You must select a device first!\n");
 					exit(EXIT_FAILURE);
 				}
 
-				if (find_device(fDevices, device)) {
-					set_value(device, optarg);
+				if (find_device(fDevices, config.device)) {
+					set_value(config.device, optarg);
 				}
 
 				exit(EXIT_SUCCESS);
@@ -184,6 +200,7 @@ int main(int argc, char** argv) {
 				fprintf(stdout, "%d\n", actual_value());
 				exit(EXIT_SUCCESS);
 			case 'f':
+        set_value_all(optarg);
 				exit(EXIT_SUCCESS);
 			case '?':
 				if (optopt == 's') {
@@ -196,7 +213,6 @@ int main(int argc, char** argv) {
 		}
 	}
 
-	free(device);
 	fclose(fDevices);
 	fclose(fConfig);
 

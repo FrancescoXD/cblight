@@ -4,10 +4,7 @@ FILES = src/main.c
 OUTPUT = ./build/cblight
 LIBS = -I./include/
 
-.PHONY: build clean
-
-clean:
-	rm -rf *.o
-
 build:
-	$(CC) $(FILES) -o $(OUTPUT) $(CCFLAGS)
+	mkdir ./build/
+	$(CC) $(FILES) -o $(OUTPUT) $(CCFLAGS) ${LIBS}
+
