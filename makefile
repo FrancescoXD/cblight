@@ -1,10 +1,15 @@
 CC = gcc
 CCFLAGS = -Wall -Wextra -Werror -pedantic
-FILES = src/main.c
+MAIN = src/main.c
+FILES = src/cblight.c
 OUTPUT = ./build/cblight
-LIBS = -I./include/
+LIBS = -Iinclude/
 
 build:
 	mkdir ./build/
-	$(CC) $(FILES) -o $(OUTPUT) $(CCFLAGS) ${LIBS}
+	$(CC) -c $(FILES) -o build/cblight_o $(CCFLAGS) $(LIBS)
+	$(CC) $(MAIN) build/cblight_o $(CCFLAGS) $(LIBS) -o $(OUTPUT)
+	rm ./build/cblight_o
 
+clean:
+	rm -rf ./build/

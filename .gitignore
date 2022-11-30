@@ -1,3 +1,8 @@
+# Build dir
+build/
+config.cb
+devices.cb
+
 # Prerequisites
 *.d
 
