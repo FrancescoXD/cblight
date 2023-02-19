@@ -1,4 +1,5 @@
 # Build dir
+.cache/
 build/
 config.cb
 devices.cb

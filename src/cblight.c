@@ -1,25 +1,7 @@
-#include "cblight.h"
+#include <cblight.h>
+#include <utils.h>
 
-void remove_newline(char* s) {
-  while (*s) {
-	if (*s == '\n') {
-	  *s = '\0';
-	}
-	s++;
-  }
-}
-
-void help_page(char* app_name) {
-	fprintf(stderr, "cblight help page\n");
-	fprintf(stderr, "%s%5s%25s\n", app_name, "-h", "Show this page");
-	fprintf(stderr, "%s%5s%27s\n", app_name, "-l", "List all devices");
-	fprintf(stderr, "%s%15s%16s\n", app_name, "-d [devname]", "Select a device");
-	fprintf(stderr, "%s%11s%29s\n", app_name, "-s [num]", "Set the screen backlight");
-	fprintf(stderr, "%s%5s%32s\n", app_name, "-a", "Show the actual value");
-	fprintf(stderr, "%s%5s%32s\n", app_name, "-f", "Set the value to all devices");
-}
-
-void generate_devices(FILE* fDevices, config_t* config) {
+void generate_devices(FILE *fDevices, config_t *config) {
 	struct dirent *pDirent;
 	DIR* pDIR;
 	char* bldir = "/sys/class/backlight/";
@@ -39,7 +21,7 @@ void generate_devices(FILE* fDevices, config_t* config) {
 	}
 }
 
-void print_devices(FILE* fDevices) {
+void print_devices(FILE *fDevices) {
 	char device[50];
 	fseek(fDevices, 0, SEEK_SET);
 	fprintf(stdout, "Devices list:\n");
@@ -53,12 +35,12 @@ int actual_value() {
 	return 0;
 }
 
-void get_device(config_t* config) {
+void get_device(config_t *config) {
 	FILE* fConfig = fopen(config->devices_file, "r");
 	fgets(config->device, 50, fConfig);
 }
 
-int find_device(FILE* fDevices, char* device) {
+int find_device(FILE *fDevices, char *device) {
 	char sel_device[50];
 	fseek(fDevices, 0, SEEK_SET);
 	while (fgets(sel_device, 50, fDevices)) {
@@ -71,7 +53,7 @@ int find_device(FILE* fDevices, char* device) {
 	return FALSE;
 }
 
-void set_device(FILE* fConfig, FILE* fDevices, char* device) {
+void set_device(FILE *fConfig, FILE *fDevices, char *device) {
 	if (find_device(fDevices, device)) {
 		fprintf(stdout, "Device selected: %s\n", device);
 		fprintf(fConfig, "%s\n", device);
@@ -80,7 +62,7 @@ void set_device(FILE* fConfig, FILE* fDevices, char* device) {
 	}
 }
 
-void set_value(char* device, char* value) {
+void set_value(char *device, char *value) {
 	char path[100] = "/sys/class/backlight/";
 	// /sys/class/backlight/{device}
 	strcat(path, device);
@@ -112,11 +94,11 @@ void set_value(char* device, char* value) {
 	free(brightness);
 }
 
-void set_value_all(char* value) {
-  fprintf(stdout, "%s\n", value);
+void set_value_all(char *value) {
+	fprintf(stdout, "%s\n", value);
 }
 
-void parse_args(int argc, char** argv, config_t* config, FILE* fDevices, FILE* fConfig) {
+void parse_args(int argc, char **argv, config_t *config, FILE *fDevices, FILE *fConfig) {
 	int option;
 	while ((option = getopt(argc, argv, "hld:s:af:")) != -1) {
 		switch (option) {
@@ -154,7 +136,7 @@ void parse_args(int argc, char** argv, config_t* config, FILE* fDevices, FILE* f
 				fprintf(stdout, "%d\n", actual_value());
 				exit(EXIT_SUCCESS);
 			case 'f':
-		set_value_all(optarg);
+				set_value_all(optarg);
 				exit(EXIT_SUCCESS);
 			case '?':
 				if (optopt == 's') {
@@ -168,7 +150,7 @@ void parse_args(int argc, char** argv, config_t* config, FILE* fDevices, FILE* f
 	}
 }
 
-void open_devices(config_t* config, FILE* fDevices, FILE* fConfig) {
+void open_devices(config_t *config, FILE *fDevices, FILE *fConfig) {
 	char mode[3];
 
 	if (access(config->devices_file, F_OK) == 0) {

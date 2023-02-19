@@ -1,6 +1,6 @@
-#include "cblight.h"
+#include <cblight.h>
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
 	if (optind >= argc) {
 		fprintf(stderr, "No arguments provided, run -h for help\n");
 		exit(EXIT_FAILURE);
@@ -21,3 +21,4 @@ int main(int argc, char** argv) {
 
 	exit(EXIT_SUCCESS);
 }
+
