@@ -25,42 +25,28 @@ typedef struct {
 } config_t;
 
 /**
- * @brief Remove the newline character from string
- * @param s String where to remove
-*/
-void remove_newline(char* s);
-
-/**
- * @brief Print the help page
- * @param app_name Appname
-*/
-void help_page(char* app_name);
-
-/**
  * @brief Open devices dir and print all devices to devices file
  * @param fDevices Devices file
- * @param config Config struct
 */
-void generate_devices(FILE* fDevices, config_t* config);
+void generate_devices(FILE *fDevices);
 
 /**
  * @brief Print all devices in the devices file
  * @param fDevices Devices file
 */
-void print_devices(FILE* fDevices);
+void print_devices(FILE *fDevices);
 
 /**
- * @brief Return the actual brightness value
- * @param TBD TBD
+ * @brief Return the brightness value
  * @return Returns the actual brightness value
 */
-int actual_value();
+int brightness_value(config_t *config);
 
 /**
  * @brief Fill the device var in config struct
  * @param config Config struct
 */
-void get_device(config_t* config);
+void get_device(config_t *config);
 
 /**
  * @brief Find if devices selected is in the devices file
@@ -68,7 +54,7 @@ void get_device(config_t* config);
  * @param device Device name (from config struct)
  * @return Returns TRUE if found, otherwise FALSE
 */
-int find_device(FILE* fDevices, char* device);
+int find_device(FILE *fDevices, char *device);
 
 /**
  * @brief Set the new device
@@ -76,20 +62,14 @@ int find_device(FILE* fDevices, char* device);
  * @param fDevices Devices file
  * @param device Device name
 */
-void set_device(FILE* fConfig, FILE* fDevices, char* device);
+void set_device(FILE *fConfig, FILE *fDevices, char *device);
 
 /**
  * @brief Set the new value to a device
  * @param device Device name
  * @param value Value to bet set
 */
-void set_value(char* device, char* value);
-
-/**
- * @brief Set value to all devices found
- * @param value Value to be set
-*/
-void set_value_all(char* value);
+void set_value(char *device, char *value);
 
 /**
  * @brief Parse the args
@@ -99,7 +79,7 @@ void set_value_all(char* value);
  * @param fDevices Devices file
  * @param fConfig Config file
 */
-void parse_args(int argc, char** argv, config_t* config, FILE* fDevices, FILE* fConfig);
+void parse_args(int argc, char **argv, config_t *config, FILE **fDevices, FILE **fConfig);
 
 /**
  * @brief Open devices to check if file exists or not
@@ -107,6 +87,6 @@ void parse_args(int argc, char** argv, config_t* config, FILE* fDevices, FILE* f
  * @param fDevices Devices file
  * @param fConfig Config file
 */
-void open_devices(config_t* config, FILE* fDevices, FILE* fConfig);
+void open_devices(config_t *config, FILE **fDevices, FILE **fConfig);
 
 #endif

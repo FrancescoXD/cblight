@@ -10,11 +10,11 @@ int main(int argc, char **argv) {
 	strcpy(config.devices_file, "devices.cb");
 	strcpy(config.config_file, "config.cb");
 
-	FILE* fDevices = NULL;
-	FILE* fConfig = NULL;
+	FILE *fDevices = NULL;
+	FILE *fConfig = NULL;
 
-	open_devices(&config, fDevices, fConfig);
-	parse_args(argc, argv, &config, fDevices, fConfig);
+	open_devices(&config, &fDevices, &fConfig);
+	parse_args(argc, argv, &config, &fDevices, &fConfig);
 
 	fclose(fDevices);
 	fclose(fConfig);
