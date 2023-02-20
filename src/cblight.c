@@ -42,6 +42,7 @@ int brightness_value(config_t *config) {
 
 	FILE *dvalue = fopen(dev, "r");
 	fgets(value, 20, dvalue);
+	fclose(dvalue);
 	remove_newline(value);
 
 	return atoi(value);
