@@ -12,8 +12,6 @@ void generate_devices(FILE *fDevices) {
 		exit(EXIT_FAILURE);
 	}
 
-	//fclose(fopen(config->devices_file, "w"));
-	//rewind(fDevices);
 	fseek(fDevices, 0L, SEEK_SET);
 	if (fDevices == NULL) {
 		perror("fDevices is NULL");

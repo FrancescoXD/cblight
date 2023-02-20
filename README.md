@@ -2,7 +2,8 @@
 Simple replacement for xbacklight
 
 ## Requirements
-- make
+- meson
+- ninja
 
 ## How to install
 ```
