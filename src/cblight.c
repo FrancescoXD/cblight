@@ -165,7 +165,7 @@ void open_devices(config_t *config, FILE **fDevices, FILE **fConfig) {
 		strncpy(mode, "r+", 3);
 	} else {
 		strncpy(mode, "w+", 3);
-		fprintf(stdout, "[info] creating devices.cb...");
+		fprintf(stdout, "[info] creating devices.cb...\n");
 	}
 	*fDevices = fopen(config->devices_file, mode);
 
@@ -173,7 +173,7 @@ void open_devices(config_t *config, FILE **fDevices, FILE **fConfig) {
 		strncpy(mode, "r+", 3);
 	} else {
 		strncpy(mode, "w+", 3);
-		fprintf(stdout, "[info] creating config.cb...");
+		fprintf(stdout, "[info] creating config.cb...\n");
 	}
 	*fConfig = fopen(config->config_file, mode);
 
