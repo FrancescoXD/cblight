@@ -5,10 +5,15 @@ int main(int argc, char **argv) {
 		fprintf(stderr, "No arguments provided, run -h for help\n");
 		exit(EXIT_FAILURE);
 	}
-
+	
 	config_t config;
-	strcpy(config.devices_file, "devices.cb");
-	strcpy(config.config_file, "config.cb");
+
+	make_config_directory();
+	char *config_dir = get_config_dir();
+	strcpy(config.devices_file, config_dir);
+	strncat(config.devices_file, "devices.cb", 11);
+	strcpy(config.config_file, config_dir);
+	strncat(config.config_file, "config.cb", 10);
 
 	FILE *fDevices = NULL;
 	FILE *fConfig = NULL;

@@ -1,5 +1,5 @@
-# cblight
-Simple replacement for xbacklight
+# cblight (v0.2)
+Simple replacement for xbacklight. It's just a student work to learn more about C programming, any help is appreciated.
 
 ## Requirements
 - meson

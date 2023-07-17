@@ -3,9 +3,12 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <getopt.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+
+#include "utils.h"
 
 #define TRUE 1
 #define FALSE 0
@@ -18,8 +21,8 @@
  * @param value Device brightness value
 */
 typedef struct {
-  char devices_file[50];
-  char config_file[50];
+  char devices_file[200];
+  char config_file[200];
   char device[50];
   char value[5];
 } config_t;

@@ -4,17 +4,17 @@
 void generate_devices(FILE *fDevices) {
 	struct dirent *pDirent;
 	DIR *pDIR;
-	char *bldir = "/sys/class/backlight/";
+	const char *bldir = "/sys/class/backlight/";
 
 	pDIR = opendir(bldir);
 	if (pDIR == NULL) {
-		fprintf(stderr, "Cannot open directory: %s\n", bldir);
+		fprintf(stderr, "[error] cannot open directory: %s\n", bldir);
 		exit(EXIT_FAILURE);
 	}
 
 	fseek(fDevices, 0L, SEEK_SET);
 	if (fDevices == NULL) {
-		perror("fDevices is NULL");
+		perror("[error] fDevices is NULL");
 		exit(EXIT_FAILURE);
 	}
 	while ((pDirent = readdir(pDIR)) != NULL) {
@@ -72,7 +72,7 @@ void set_device(FILE *fConfig, FILE *fDevices, char *device) {
 		fprintf(stdout, "Device selected: %s\n", device);
 		fprintf(fConfig, "%s\n", device);
 	} else {
-		fprintf(stderr, "Device not found!\n");
+		fprintf(stderr, "[error] device not found!\n");
 	}
 }
 
@@ -81,13 +81,13 @@ void set_value(char *device, char *value) {
 	// /sys/class/backlight/{device}
 	strcat(path, device);
 
-	char* max_brightness = malloc(sizeof(char) * 100);
+	char* max_brightness = (char *)malloc(sizeof(char) * 100);
 	// /sys/class/backlight/{device}
 	strcpy(max_brightness, path);
 	// /sys/class/backlight/{device}/max_brightness
 	strcat(max_brightness, "/max_brightness");
 
-	char* brightness = malloc(sizeof(char) * 100);
+	char* brightness = (char *)malloc(sizeof(char) * 100);
 	strcpy(brightness, path);
 	strcat(brightness, "/brightness");
 
@@ -100,7 +100,7 @@ void set_value(char *device, char *value) {
 		fprintf(file, "%s", value);
 		fprintf(stdout, "Brightness set to: %s\n", value);
 	} else {
-		fprintf(stderr, "Cannot set the brightness value!\nMin: 0\nMax: %s\n", value_m);
+		fprintf(stderr, "[error] cannot set the brightness value!\nMin: 0\nMax: %s\n", value_m);
 	}
 
 	fclose(file);
@@ -125,7 +125,7 @@ void parse_args(int argc, char **argv, config_t *config, FILE **fDevices, FILE *
 					set_device(*fConfig, *fDevices, optarg);
 					exit(EXIT_SUCCESS);
 				} else {
-					fprintf(stderr, "Cannot find device %s!\n", optarg);
+					fprintf(stderr, "[error] cannot find device %s!\n", optarg);
 					exit(EXIT_FAILURE);
 				}
 			case 's':
@@ -133,7 +133,7 @@ void parse_args(int argc, char **argv, config_t *config, FILE **fDevices, FILE *
 				get_device(config);
 				remove_newline(config->device);
 				if (strcmp(config->device, "") == 0) {
-					fprintf(stderr, "You must select a device first!\n");
+					fprintf(stderr, "[error] you must select a device first!\n");
 					exit(EXIT_FAILURE);
 				}
 
@@ -148,12 +148,15 @@ void parse_args(int argc, char **argv, config_t *config, FILE **fDevices, FILE *
 				exit(EXIT_SUCCESS);
 			case '?':
 				if (optopt == 's' || optopt == 'd') {
-					fprintf(stderr, "Expected one argument after -%c!\n", optopt);
+					fprintf(stderr, "[error] expected one argument after -%c!\n", optopt);
 					exit(EXIT_FAILURE);
 				} else {
-					fprintf(stderr, "Unknow option: %c\n", optopt);
+					fprintf(stderr, "[error] unknown option: %c\n", optopt);
 					exit(EXIT_FAILURE);
 				}
+			default:
+				fprintf(stderr, "[error] unknown option in arguments!\n");
+				exit(EXIT_FAILURE);
 		}
 	}
 }
@@ -164,21 +167,21 @@ void open_devices(config_t *config, FILE **fDevices, FILE **fConfig) {
 	if (access(config->devices_file, F_OK) == 0) {
 		strncpy(mode, "r+", 3);
 	} else {
-		strncpy(mode, "w+", 3);
 		fprintf(stdout, "[info] creating devices.cb...\n");
+		strncpy(mode, "w+", 3);
 	}
 	*fDevices = fopen(config->devices_file, mode);
 
 	if (access(config->config_file, F_OK) == 0) {
 		strncpy(mode, "r+", 3);
 	} else {
-		strncpy(mode, "w+", 3);
 		fprintf(stdout, "[info] creating config.cb...\n");
+		strncpy(mode, "w+", 3);
 	}
 	*fConfig = fopen(config->config_file, mode);
 
 	if (fDevices == NULL || fConfig == NULL) {
-		fprintf(stderr, "Unable to open %s or %s\n", config->config_file, config->devices_file);
+		fprintf(stderr, "[error] unable to open %s or %s\n", config->config_file, config->devices_file);
 		exit(EXIT_FAILURE);
 	}
 }
