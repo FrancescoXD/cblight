@@ -87,11 +87,11 @@ void set_value(char *device, char *value) {
 	// /sys/class/backlight/{device}/max_brightness
 	strcat(max_brightness, "/max_brightness");
 
-	char* brightness = (char *)malloc(sizeof(char) * 100);
+	char *brightness = (char *)malloc(sizeof(char) * 100);
 	strcpy(brightness, path);
 	strcat(brightness, "/brightness");
 
-	FILE* file = fopen(max_brightness, "r");
+	FILE *file = fopen(max_brightness, "r");
 	char value_m[50];
 	fgets(value_m, 50, file);
 	int val = atoi(value);
