@@ -31,8 +31,8 @@ char *get_config_dir(void) {
 		exit(EXIT_FAILURE);
 	}
 
-	char *config_dir = (char *)malloc(sizeof(char) * 100);
-	strcat(config_dir, home_env);
+	static char config_dir[100];
+	strcpy(config_dir, home_env);
 	strncat(config_dir, "/.config/cblight/", 18);
 
 	return config_dir;
@@ -42,14 +42,15 @@ void make_config_directory(void) {
 	char *config_dir = get_config_dir();
 
 	struct stat stat_info;
-	int ret_stat = stat(config_dir, &stat_info);
-	if (!(ret_stat == 0 && S_ISDIR(stat_info.st_mode))) {
-		fprintf(stdout, "[info] creating the config directory...\n");
-		int mkdir_ret = mkdir(config_dir, 0755);
-		if (mkdir_ret == -1) {
-			fprintf(stderr, "[error] unable to create config dir!\n");
-			exit(EXIT_FAILURE);
-		}
+	if (stat(config_dir, &stat_info) == 0 && S_ISDIR(stat_info.st_mode)) {
+		return;
+	}
+
+	fprintf(stdout, "[info] creating the config directory...\n");
+	int mkdir_ret = mkdir(config_dir, 0755 | O_CREAT);
+	if (mkdir_ret == -1) {
+		fprintf(stderr, "[error] unable to create config dir: %s\n", strerror(errno));
+		exit(EXIT_FAILURE);
 	}
 }
 

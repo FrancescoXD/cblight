@@ -49,8 +49,12 @@ int brightness_value(config_t *config) {
 }
 
 void get_device(config_t *config) {
-	FILE *fConfig = fopen(config->devices_file, "r");
+	FILE *fConfig = fopen(config->config_file, "r");
 	fgets(config->device, 50, fConfig);
+	if (strlen(config->device) == 0) {
+		fprintf(stdout, "[error] no device selected!\n");
+		exit(EXIT_FAILURE);
+	}
 	remove_newline(config->device);
 }
 
@@ -144,7 +148,7 @@ void parse_args(int argc, char **argv, config_t *config, FILE **fDevices, FILE *
 				exit(EXIT_SUCCESS);
 			case 'a':
 				get_device(config);
-				fprintf(stdout, "%d\n", brightness_value(config));
+				fprintf(stdout, "Brightness value: %d\n", brightness_value(config));
 				exit(EXIT_SUCCESS);
 			case '?':
 				if (optopt == 's' || optopt == 'd') {

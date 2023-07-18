@@ -23,7 +23,6 @@ int main(int argc, char **argv) {
 
 	fclose(fDevices);
 	fclose(fConfig);
-	free(config_dir);
 
 	exit(EXIT_SUCCESS);
 }
